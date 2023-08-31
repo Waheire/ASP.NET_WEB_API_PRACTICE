@@ -46,8 +46,8 @@ namespace WebApiPractice.Controllers
             {
                 var existingTodo = _todos.First(x => x.Id == id);
                 //transformation
-                var todos = _mapper.Map<TodoResponse>(existingTodo);
-                return Ok(todos);
+                var todo = _mapper.Map<TodoResponse>(existingTodo);
+                return Ok(todo);
             }
             catch(Exception ex) 
             {
@@ -68,6 +68,36 @@ namespace WebApiPractice.Controllers
            newTodo.Id = Guid.NewGuid();
             _todos.Add(newTodo);
             return Ok(new TodoSuccess(201, "Todo Created Successfully"));
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<TodoSuccess> UpdateTodo(Guid id, AddTodo updateTodo) 
+        {
+            var existingTodo = _todos.FirstOrDefault(x => x.Id == id);
+            if (existingTodo != null)
+            {
+                //update
+                //existingTodo.Title = updateTodo.Title; 
+                //existingTodo.Description = updateTodo.Description;
+                //return Ok(new TodoSuccess(204, "Todo Updated successfully"));
+
+                //or 
+                _mapper.Map(updateTodo, existingTodo);
+                return Ok(new TodoSuccess(204, "Todo Updated successfully"));
+            }
+                return NotFound("Todo not found");
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<TodoSuccess> DeleteTodo(Guid id )
+        {
+            var existingTodo = _todos.FirstOrDefault(x => x.Id == id);
+            if (existingTodo != null)
+            {
+                _todos.Remove(existingTodo);
+                return Ok(new TodoSuccess(204, "Todo Deleted Successfully"));
+            }
+            return NotFound("Todo not found");
         }
     }
 }
